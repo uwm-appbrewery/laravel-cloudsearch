@@ -22,31 +22,19 @@ class LaravelCloudSearchServiceProvider extends ServiceProvider
         });
 
         if ($this->app->runningInConsole()) {
-            $this->registerResources();
             $this->registerCommands();
         }
     }
 
-    /**
-     * Register the resources.
-     *
-     * @return bool
-     */
-    protected function registerResources()
+    public function boot()
     {
-        if ($this->isLumen() === false) {
-            $this->publishes([
-                __DIR__.'/../config/cloud-search.php' => config_path('cloud-search.php'),
-            ], 'config');
-
-            $this->mergeConfigFrom(
-                __DIR__.'/../config/cloud-search.php', 'cloud-search'
-            );
-        }
+        $this->publishes([
+            __DIR__.'/../config/cloud-search.php' => config_path('cloud-search.php'),
+        ]);
 
         $this->publishes([
             __DIR__ . '/../database/migrations' => base_path('/database/migrations'),
-        ], 'migrations');
+        ]);
     }
 
     /**
@@ -62,15 +50,5 @@ class LaravelCloudSearchServiceProvider extends ServiceProvider
             Console\IndexCommand::class,
             Console\QueueCommand::class,
         ]);
-    }
-
-    /**
-     * Check if package is running under a Lumen app.
-     *
-     * @return bool
-     */
-    protected function isLumen()
-    {
-        return str_contains($this->app->version(), 'Lumen') === true;
     }
 }
