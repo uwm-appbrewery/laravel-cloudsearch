@@ -28,13 +28,13 @@ class LaravelCloudSearchServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/cloud-search.php' => config_path('cloud-search.php'),
-        ]);
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-        $this->publishes([
-            __DIR__ . '/../database/migrations' => base_path('/database/migrations'),
-        ]);
+        if ($this->isLumen() === false) {
+            $this->publishes([
+                __DIR__.'/../config/cloud-search.php' => config_path('cloud-search.php'),
+            ]);
+        }
     }
 
     /**
@@ -50,5 +50,15 @@ class LaravelCloudSearchServiceProvider extends ServiceProvider
             Console\IndexCommand::class,
             Console\QueueCommand::class,
         ]);
+    }
+
+    /**
+     * Check if package is running under a Lumen app.
+     *
+     * @return bool
+     */
+    protected function isLumen()
+    {
+        return str_contains($this->app->version(), 'Lumen') === true;
     }
 }
